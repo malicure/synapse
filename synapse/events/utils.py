@@ -402,7 +402,9 @@ class EventClientSerializer:
         if not event.internal_metadata.is_redacted() and (
             self.experimental_msc1849_support_enabled and bundle_aggregations
         ):
-            annotations = await self.store.get_aggregation_groups_for_event(event_id)
+            annotations = await self.store.get_aggregation_groups_for_event(
+                event_id, RelationTypes.ANNOTATION
+            )
             references = await self.store.get_relations_for_event(
                 event_id, RelationTypes.REFERENCE, direction="f"
             )

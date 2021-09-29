@@ -133,6 +133,7 @@ class RelationsWorkerStore(SQLBaseStore):
     async def get_aggregation_groups_for_event(
         self,
         event_id: str,
+        relation_type: str,
         event_type: Optional[str] = None,
         limit: int = 5,
         direction: str = "b",
@@ -160,7 +161,7 @@ class RelationsWorkerStore(SQLBaseStore):
         """
 
         where_clause = ["relates_to_id = ?", "relation_type = ?"]
-        where_args = [event_id, RelationTypes.ANNOTATION]
+        where_args = [event_id, relation_type]
 
         if event_type:
             where_clause.append("type = ?")
@@ -185,7 +186,7 @@ class RelationsWorkerStore(SQLBaseStore):
             having_clause = ""
 
         sql = """
-            SELECT type, aggregation_key, COUNT(DISTINCT sender), MAX(stream_ordering)
+            SELECT type, aggregation_key, COUNT(DISTINCT event_id), MAX(stream_ordering)
             FROM event_relations
             INNER JOIN events USING (event_id)
             WHERE {where_clause}
